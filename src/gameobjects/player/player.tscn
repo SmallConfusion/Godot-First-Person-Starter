@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1k32fj2ayrr6"]
+
+[ext_resource type="Script" path="res://gameobjects/player/player.gd" id="1_b1fnf"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_cb8sl"]
+radius = 0.3
+height = 1.8
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_b1fnf")
+
+[node name="CollisionShape3d" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_cb8sl")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.47864, 0)
+
+[node name="Camera3d" type="Camera3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.172424)
+current = true
+fov = 90.0
