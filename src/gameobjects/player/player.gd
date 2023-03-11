@@ -1,11 +1,15 @@
 extends CharacterBody3D
 
-@export var friction := 0.8
-@export var speed := 4.0
-@export var jump_velocity := 4.0
+var ground_friction := 0.8
+var air_friction := 0.99
 
-@export var base_mouse_sensitivity := 0.0027
-@export var base_joypad_sensitivity := 0.015
+var ground_acceleration := 0.75
+var air_acceleration := 0.02
+
+var jump_velocity := 4.0
+
+var base_mouse_sensitivity := 0.0027
+var base_joypad_sensitivity := 0.015
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -24,24 +28,33 @@ func _process(delta):
 		rotation.y -= joypad_look.y * joypad_sensitivity * base_joypad_sensitivity
 	if abs(joypad_look.x) > 0.15:
 		$Head.rotation.x -= joypad_look.x * joypad_sensitivity * base_joypad_sensitivity
-		$Head.rotation.x = clamp($Head.rotation.x, deg_to_rad(-90), deg_to_rad(90))
-
+		$Head.rotation.x = clamp($Head.rotation.x, -PI/2, PI/2)
 
 func _physics_process(delta):
+	# Friction
+	var friction = ground_friction if is_on_floor() else air_friction
+	
 	velocity.x *= friction
 	velocity.z *= friction
 	
+	# Gravity
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-
+	
+	# Jump
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = jump_velocity
 
+	# Input
 	var input_dir = Input.get_vector("Left", "Right", "Forward", "Backward")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y))
+	
+	# Move
 	if direction:
-		velocity.x = direction.x * speed
-		velocity.z = direction.z * speed
+		var acceleration = ground_acceleration if is_on_floor() else air_acceleration
+		
+		velocity.x += direction.x * acceleration
+		velocity.z += direction.z * acceleration
 	
 	move_and_slide()
 
